@@ -9,7 +9,7 @@
       "coverage",
       "dist"
     ],
-    "exec": "ts-node -r tsconfig-paths/register ./src/server.ts --env-file=.env",
+    "exec": "ts-node -r tsconfig-paths/register ./src/server.ts",
     "env": {
       "NODE_ENV": "dev"
     }

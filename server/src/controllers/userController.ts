@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
+import User, { IUser } from '@src/models/userModel';
 
 /**
- * Authenticate a user
+ * Route to authenticate a user
  * @param req {Request}
  * @param res {Response}
  *
@@ -16,7 +17,7 @@ const authUser = asyncHandler(async (req: Request, res: Response) => {
 });
 
 /**
- * REgister a new user
+ * Route to Route to register a new user
  * @param req {Request}
  * @param res {Response}
  *
@@ -26,11 +27,34 @@ const authUser = asyncHandler(async (req: Request, res: Response) => {
  * Access: Public
  */
 const registerUser = asyncHandler(async (req: Request, res: Response) => {
-  res.status(200).json({ message: 'Register user' });
+  const { name, email, password }: IUser = req.body;
+  const userExists = await User.findOne({ email });
+
+  if (userExists) {
+    res.status(400);
+    throw new Error('User already exists');
+  }
+
+  const user = await User.create({
+    name,
+    email,
+    password,
+  });
+
+  if (user) {
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+    });
+  } else {
+    res.status(400);
+    throw new Error('Invalid user data');
+  }
 });
 
 /**
- * Logout user
+ * Route to logout user
  * @param req {Request}
  * @param res {Response}
  *
@@ -44,7 +68,7 @@ const logoutUser = asyncHandler(async (req: Request, res: Response) => {
 });
 
 /**
- * Get user profile
+ * Route to get user profile
  * @param req {Request}
  * @param res {Response}
  *
@@ -58,7 +82,7 @@ const getUserProfile = asyncHandler(async (req: Request, res: Response) => {
 });
 
 /**
- * Update user profile
+ * Route to update user profile
  * @param req {Request}
  * @param res {Response}
  *
