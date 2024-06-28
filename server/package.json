@@ -9,6 +9,7 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^20.14.9",
     "@typescript-eslint/eslint-plugin": "^7.14.1",
@@ -28,6 +29,7 @@
     "bcrypt": "^5.1.1",
     "express": "^4.19.2",
     "express-async-handler": "^1.2.0",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.4.4"
   },
   "author": "Rob Barton (robbarton.dev)",

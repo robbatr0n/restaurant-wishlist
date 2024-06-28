@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import User, { IUser } from '@src/models/userModel';
+import generateToken from '@src/utils/generateToken';
 
 /**
  * Route to authenticate a user
@@ -13,7 +14,19 @@ import User, { IUser } from '@src/models/userModel';
  * Access: Public
  */
 const authUser = asyncHandler(async (req: Request, res: Response) => {
-  res.status(200).json({ message: 'Auth user' });
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (user && (await user.matchPassword(password))) {
+    generateToken(res, user._id);
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+    });
+  } else {
+    res.status(401);
+    throw new Error('Invalid email or password');
+  }
 });
 
 /**
@@ -42,6 +55,7 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
   });
 
   if (user) {
+    generateToken(res, user._id);
     res.status(201).json({
       _id: user._id,
       name: user.name,
