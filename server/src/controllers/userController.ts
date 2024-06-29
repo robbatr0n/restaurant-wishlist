@@ -14,10 +14,12 @@ import generateToken from '@src/utils/generateToken';
  * Access: Public
  */
 const authUser = asyncHandler(async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { email, password }: IUser = req.body;
   const user = await User.findOne({ email });
+
   if (user && (await user.matchPassword(password))) {
     generateToken(res, user._id);
+
     res.status(201).json({
       _id: user._id,
       name: user.name,
@@ -56,6 +58,7 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
 
   if (user) {
     generateToken(res, user._id);
+
     res.status(201).json({
       _id: user._id,
       name: user.name,
@@ -78,7 +81,12 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
  * Access: Public
  */
 const logoutUser = asyncHandler(async (req: Request, res: Response) => {
-  res.status(200).json({ message: 'Logout user' });
+  res.cookie('jwt', '', {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+
+  res.status(200).json({ message: 'Logged out user' });
 });
 
 /**
@@ -92,7 +100,13 @@ const logoutUser = asyncHandler(async (req: Request, res: Response) => {
  * Access: Private
  */
 const getUserProfile = asyncHandler(async (req: Request, res: Response) => {
-  res.status(200).json({ message: 'Get user profile' });
+  const user = {
+    _id: req.user._id,
+    name: req.user.name,
+    email: req.user.email,
+  };
+
+  res.status(200).json(user);
 });
 
 /**
@@ -106,7 +120,26 @@ const getUserProfile = asyncHandler(async (req: Request, res: Response) => {
  * Access: Private
  */
 const updateUserProfile = asyncHandler(async (req: Request, res: Response) => {
-  res.status(200).json({ message: 'Update user profile' });
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+
+    const updatedUser = await user.save();
+    res.status(200).json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
 });
 
 export { authUser, registerUser, logoutUser, getUserProfile, updateUserProfile };

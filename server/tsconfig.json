@@ -12,6 +12,7 @@
     "moduleResolution": "node", // Choose a module resolution strategy
     "resolveJsonModule": true,
     "removeComments": true,
+    
 
     "paths": {
       "@src/*": ["src/*"] // absolute paths
@@ -32,6 +33,7 @@
     "noImplicitReturns": true, // Report error when not all code paths in function return a value
     "noFallthroughCasesInSwitch": true // Report errors for fallthrough cases in switch statement
   },
+  "files":["src/types/types.d.ts"],
   "include": [
     "src/**/*" // Include all files in the src directory
   ],

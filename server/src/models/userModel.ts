@@ -5,6 +5,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
+  matchPassword: (pw: string) => Promise<boolean>;
 }
 
 const userSchema = new Schema<IUser>(
@@ -26,9 +27,10 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-userSchema.methods.matchPassword = async function (enteredPassword: string) {
+userSchema.methods.matchPassword = async function (enteredPassword: string): Promise<boolean> {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
 const User = model<IUser>('User', userSchema);
+
 export default User;
